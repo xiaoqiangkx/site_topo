@@ -1,5 +1,5 @@
+#include <webgraph.h>
 #include "minunit.h"
-#include <sitetopo/webgraph.h>
 
 webg_t *webg = NULL;
 
@@ -15,6 +15,7 @@ char *test_init_webg()
 }
 
 char* test_destroy_webg() {
+    destroy_webg(webg);
     return NULL;
 }
 

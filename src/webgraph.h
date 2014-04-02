@@ -61,6 +61,6 @@ int init_webg(webg_t**);
 /*
  * destory sm_vertex_dict
  */
-void destory(webg_t*);
+void destory_webg(webg_t*);
 
 #endif

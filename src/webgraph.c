@@ -1,6 +1,6 @@
-#include "webgraph.h"
-#include "dbg.h"
+#include <webgraph.h>
 #include <stdlib.h>
+#include "dbg.h"
 
 int init_webg(webg_t** webg) {
 
@@ -36,7 +36,7 @@ error:
 }
 
 
-void destroy(webg_t* webg) {
+void destroy_webg(webg_t* webg) {
     if (webg == NULL) return;
     int i = 0;
 

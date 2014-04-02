@@ -1,4 +1,4 @@
-CFLAGS=-g -O2 -Wall -Wextra -Isrc -rdynamic -DNDEBUG $(OPTFLAGS)
+CFLAGS=-g -Wall -O0 -Wextra -Isrc -rdynamic -DNDEBUG $(OPTFLAGS)
 LIBS=-ldl $(OPTLIBS)
 PREFIX?=/usr/local
 
@@ -8,7 +8,7 @@ OBJECTS=$(patsubst %.c, %.o, $(SOURCES))
 TEST_SRC=$(wildcard tests/*_tests.c)
 TESTS=$(patsubst %.c, %, $(TEST_SRC))
 
-TARGET=build/libsitetopo.a
+TARGET=build/libsite_topo.a
 SO_TARGET=$(patsubst %.a, %.so, $(TARGET))
 
 # The Target Build
@@ -32,7 +32,10 @@ build:
 # The Unit Tests
 .PHONY: tests
 tests: CFLAGS += $(TARGET)
-tests: $(TESTS)
+tests: $(TESTS) runtests
+$(TESTS): %: %.c
+	$(CC) -o $@ $< $(CFLAGS)
+runtests:
 	sh ./tests/runtests.sh
 
 valgrind:
