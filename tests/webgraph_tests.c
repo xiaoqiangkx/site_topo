@@ -9,7 +9,7 @@ char *test_init_webg()
     mu_assert(webg != NULL, "webg == NULL");
     mu_assert(webg->sm_vertex_dict != NULL, "failed to allocate memory for sm_vertex_dict.");
     mu_assert(webg->url_dict != NULL, "failed to allocate memory for url_dict.");
-    mu_assert(webg->vertex_num != 0, "the number of vertex for webg is not zero.");
+    mu_assert(webg->vertex_num == 0, "the number of vertex for webg is not zero.");
 
     return NULL;
 }

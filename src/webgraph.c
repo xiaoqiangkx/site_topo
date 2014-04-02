@@ -29,21 +29,22 @@ int init_webg(webg_t** webg) {
 
 error:
     if (*webg != NULL) {
-        if ((*webg)->sm_vertex_dict) free((*webg)->sm_vertex_dict);
-        if ((*webg)->url_dict) free((*webg)->url_dict);
+        free((*webg)->sm_vertex_dict);
+        free((*webg)->url_dict);
     } 
     return -1;
 }
 
 
 void destroy_webg(webg_t* webg) {
+
     if (webg == NULL) return;
     int i = 0;
 
+    /* destory sm_vertex_dict */
     sm_edge_node *psm, *qsm;
     if (webg->sm_vertex_dict) {
         for (i=0; i<VERTEX_MAX; i++) {
-            if (webg->sm_vertex_dict == NULL) continue;
             psm = webg->sm_vertex_dict[i].next;
             while (psm != NULL) {
                qsm = psm;
@@ -53,10 +54,12 @@ void destroy_webg(webg_t* webg) {
         } 
     }
 
+    free(webg->sm_vertex_dict);
+
+    /* destory url_dict */
     url_to_num_t *pu, *qu;
     if (webg->url_dict) {
        for (i=0; i<HASH_MAX; i++) {
-           if (webg->url_dict == NULL) continue;
            pu = webg->url_dict[i].next;
            
            while (pu != NULL) {
@@ -67,5 +70,6 @@ void destroy_webg(webg_t* webg) {
        }
     }
 
+    free(webg->url_dict);
     free(webg);
 }
