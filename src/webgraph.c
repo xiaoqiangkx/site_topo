@@ -92,7 +92,7 @@ int insert_vertex(webg_t* webg, const char* url) {
     /* assignment of url_to_num node */
     new_url_num_node->num = webg->vertex_num;
     memcpy(new_url_num_node->url, url, strlen(url) + 1);   /* may be flaw */
-    new_url_num_node->status = webg->vertex_num;    /* success to insert data */
+    new_url_num_node->status = -1;    /* success to insert data */
 
     new_url_num_node->next = NULL;
     
@@ -115,4 +115,25 @@ int insert_vertex(webg_t* webg, const char* url) {
 error:
     return -1;
 }
+
+/******************************************Utility Function******************************/
+
+int get_vertex_addr(webg_t* webg, const char* url) {
+    unsigned hashcode = sax_hash(url) % HASH_MAX; 
+    
+    url_dict_t* hashnode = &webg->url_dict[hashcode]; 
+
+    if (hashnode->next == NULL) return -1;
+
+    url_to_num_t* p = hashnode->next;
+
+    while (p != NULL) {
+        if (strncmp(url, p->url, strlen(url)) == 0) return p->num;
+        
+        p = p->next;
+    }
+
+    return -1;
+}
+
 

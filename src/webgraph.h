@@ -2,7 +2,7 @@
 #define WEBGRAPH_H
 
 #define URL_MAX 256
-#define VERTEX_MAX 1024
+#define VERTEX_MAX 200000
 #define HASH_MAX 200000
 
 /*
@@ -84,6 +84,7 @@ int insert_vertex(webg_t* webg, const char* url);
 /*
  * insert edge node
  */
+int insert_edge(webg_t* webg, const char* from_url, const char* to_url);
 
 /*
  * get status of node
@@ -92,4 +93,12 @@ int insert_vertex(webg_t* webg, const char* url);
 /*
  * set status for node
  */
+
+/******************************************Utility Function******************************/
+
+/*
+ * insert edge: if from-vertex do not exit, then we insert a from-vertex and add to-edge to it, otherwise we  just add the to-edge to the from-vertex.
+ */
+int get_vertex_addr(webg_t*, const char*);
+
 #endif
