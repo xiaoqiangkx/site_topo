@@ -2,9 +2,15 @@
 #include "minunit.h"
 
 webg_t *webg = NULL;
+static char* s1 = "http://localhost/index1.html";
+static char* s2 = "http://localhost/index2.html";
+static char* s3 = "http://localhost/index3.html";
+static char* s4 = "http://localhost/index4.html";
+static char* s5 = "http://localhost/index5.html";
+static char* s6 = "http://localhost/index6.html";
 
-char *test_init_webg()
-{
+char *test_init_webg() {
+    
     init_webg(&webg);
     mu_assert(webg != NULL, "webg == NULL");
     mu_assert(webg->sm_vertex_dict != NULL, "failed to allocate memory for sm_vertex_dict.");
@@ -15,11 +21,32 @@ char *test_init_webg()
 }
 
 char* test_destroy_webg() {
+
     destroy_webg(webg);
     return NULL;
 }
 
+/*
+ * make sure sm_vertex_dict and url_dict are inserted with data
+ */
 char* test_insert_vertex() {
+
+    insert_vertex(webg, s1);
+    mu_assert(size(webg) == 1, "size of webg is not 1");
+    mu_assert(webg->sm_vertex_dict[0].url_num_node->num == 0, "the num of s1 is 0"); 
+
+    insert_vertex(webg, s2);
+    mu_assert(size(webg) == 2, "size of webg is not 2");
+    mu_assert(webg->sm_vertex_dict[1].url_num_node->num == 1, "the num of s1 is 1"); 
+
+    insert_vertex(webg, s3);
+    mu_assert(size(webg) == 3, "size of webg is not 3");
+    mu_assert(webg->sm_vertex_dict[2].url_num_node->num == 2, "the num of s1 is 2"); 
+
+    insert_vertex(webg, s4);
+    mu_assert(size(webg) == 4, "size of webg is not 4");
+    mu_assert(webg->sm_vertex_dict[3].url_num_node->num == 3, "the num of s1 is 3"); 
+
     return NULL;
 }
 

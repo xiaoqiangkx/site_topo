@@ -8,11 +8,18 @@
 /*
  * the key node to store url_to_num node
  * only one copy of url stored
+ * status:
+ *      >=0: success to crawl
+ *      =-1: waiting for crawling
+ *      =-2: is crawling
+ *      =-3: failed to crawl
+ *      =-4: invalid url
  */
 typedef struct _url_to_num_t {
 
-    int num;
-    char url[URL_MAX];
+    int                   num;
+    char                  url[URL_MAX];
+    int                   status;     /* status of number  */
     struct _url_to_num_t* next;
 } url_to_num_t;
 
@@ -51,10 +58,15 @@ typedef struct _webg_t {
 
 
 /*
+ * return size of webg_t
+ */
+#define size(A) ((A)->vertex_num)
+
+
+/*
  * allocate memory and initialization
  * Return: success then return 0, otherwise -1
  */
-
 int init_webg(webg_t**);
 
 
@@ -63,4 +75,21 @@ int init_webg(webg_t**);
  */
 void destory_webg(webg_t*);
 
+
+/*
+ * insert vertex into the sizeth data and hash table
+ */
+int insert_vertex(webg_t* webg, const char* url);
+
+/*
+ * insert edge node
+ */
+
+/*
+ * get status of node
+ */
+
+/*
+ * set status for node
+ */
 #endif
