@@ -90,11 +90,21 @@ int insert_edge(webg_t* webg, const char* from_url, const char* to_url);
 
 /*
  * get status of node
+ * return -1 if failed, otherwise 0
  */
+int get_url_status(webg_t* webg, const char* url);
 
 /*
  * set status for node
+ * return -100 if failed.
  */
+#define FAIL_STATUS -100
+#define IS_WAIT(A) ((A) == -1)
+#define IS_RUNNING(A) ((A) == -2)
+#define IS_FAILED(A) ((A) == -3)
+#define IS_INVALID(A) ((A) == -4)
+
+int set_url_status(webg_t* webg, const char* url, int status);
 
 /******************************************Utility Function******************************/
 

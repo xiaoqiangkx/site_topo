@@ -79,7 +79,16 @@ void destroy_webg(webg_t* webg) {
 
 int insert_vertex(webg_t* webg, const char* url) {
     /* in case of overflow */
-    if (size(webg) == URL_MAX) log_err("OVERFLOW: failed to insert vertex %s", url);
+    if (size(webg) == URL_MAX) {
+        log_err("OVERFLOW: failed to insert vertex %s", url);
+        return -1;
+    }
+    
+    /* avoid to insert twice */
+    if (get_vertex_addr(webg, url) != -1) {
+       log_err("Insert vertex twice, %s", url);
+       return -1; 
+    }
 
 
     /* insert the node into url_dict */       
@@ -138,8 +147,16 @@ int insert_edge(webg_t* webg, const char* from_url, const char* to_url) {
         if (to_num < 0) return -1;
     }
 
+
     /* insert the edge */
     sm_vertex_t *from_node = &webg->sm_vertex_dict[from_num];  
+
+    /* Defensive coding: judge whether to_node aleary inserted */
+    sm_edge_node *p = from_node->next;
+    while (p != NULL) {
+        if (strncmp(p->url_num_node->url, to_url, strlen(to_url)) == 0) return -1;
+        p = p->next;
+    }
 
     sm_edge_node *new_edge_node = malloc(sizeof(sm_edge_node));
     check_mem(new_edge_node);
@@ -164,9 +181,29 @@ error:
     return -1;
 }
 
+
+int get_url_status(webg_t* webg, const char* url) {
+
+    int num = get_vertex_addr(webg, url);
+    if (num == -1) return -4;
+
+    return webg->sm_vertex_dict[num].url_num_node->status;
+}
+
+int set_url_status(webg_t* webg, const char* url, int status) {
+    
+    int num = get_vertex_addr(webg, url);
+    if (num == -1) return -4;
+
+    webg->sm_vertex_dict[num].url_num_node->status = status;
+    return 0;
+}
+
 /******************************************Utility Function******************************/
 
 int get_vertex_addr(webg_t* webg, const char* url) {
+    if (url == NULL) return -1;
+
     unsigned hashcode = sax_hash(url) % HASH_MAX; 
     
     url_dict_t* hashnode = &webg->url_dict[hashcode]; 

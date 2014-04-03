@@ -10,6 +10,7 @@ static char* s3 = "http://localhost/index3.html";
 static char* s4 = "http://localhost/index4.html";
 static char* s5 = "http://localhost/index5.html";
 static char* s6 = "http://localhost/index6.html";
+static char* s7 = "http://localhost/index7.html";
 
 char *test_init_webg() {
     
@@ -85,6 +86,10 @@ char* test_insert_vertex() {
     int r5 = get_vertex_addr(webg, s5);
     mu_assert(r5 == -1, "do not return -1 in find invalid string s5");
 
+    /* insert twice */
+    int rc = insert_vertex(webg, s1);
+    mu_assert(rc == -1, "Insert string twice");
+
     return NULL;
 }
 
@@ -114,21 +119,38 @@ char* test_insert_edge() {
     rc = insert_edge(webg, s2, s4);
     mu_assert(rc == 0, "failed to insert right url");
 
+
+    /* insert edge twice */
+    rc = insert_edge(webg, s2, s4);
+    mu_assert(rc == -1, "insert edge twice");
     return NULL;
 }
 
 
-char* test_set_num() {
+char* test_get_status() {
+
+    int num = get_url_status(webg, s1);
+    mu_assert(IS_WAIT(num), "s1 should be waiting");
+
+    num = get_url_status(webg, s7);
+    mu_assert(IS_INVALID(num), "s7 should not be valid");
     return NULL;
 }
 
-char* test_get_num() {
+char* test_set_status() {
+    int num = set_url_status(webg, s1, -2);
+    mu_assert(num == 0, "Failed to set status");
+    mu_assert(IS_RUNNING(get_url_status(webg, s1)), "set status is not -2");
+
+    num = set_url_status(webg, s1, -3);
+    mu_assert(IS_FAILED(get_url_status(webg, s1)), "Failed to set status");
+
+    num = set_url_status(webg, s7, -3);
+    mu_assert(IS_INVALID(num), "Should not success to set for a unvalid url");
+
     return NULL;
 }
 
-char* test_set_get_num() {
-    return NULL;
-}
 
 char *all_tests() {
     mu_suite_start();
@@ -136,9 +158,8 @@ char *all_tests() {
     mu_run_test(test_init_webg);
     mu_run_test(test_insert_vertex);
     mu_run_test(test_insert_edge);
-    mu_run_test(test_set_num);
-    mu_run_test(test_get_num);
-    mu_run_test(test_set_get_num);
+    mu_run_test(test_get_status);
+    mu_run_test(test_set_status);
     mu_run_test(test_destroy_webg);
 
     return NULL;
