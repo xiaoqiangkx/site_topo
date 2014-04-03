@@ -84,16 +84,39 @@ char* test_insert_vertex() {
 
     int r5 = get_vertex_addr(webg, s5);
     mu_assert(r5 == -1, "do not return -1 in find invalid string s5");
+
     return NULL;
 }
 
 char* test_insert_edge() {
+    
+    /* insert wrong edge */
+    int rc = insert_edge(webg, s6, s1);
+    mu_assert(rc == -1, "Do not return -1 when inserting wrong edge");
+
+
+    /* insert the same url for from_url and to_url */
+    rc = insert_edge(webg, s1, s1);
+    mu_assert(rc == -1, "Do not return -1 when inserting same urls");
+
+
+    /* insert unknown edge */
+    rc = insert_edge(webg, s1, s6);
+    mu_assert(rc == 0, "failed to insert unknown url");
+
+    /* insert right url  */
+    rc = insert_edge(webg, s1, s2);
+    mu_assert(rc == 0, "failed to insert right url");
+    rc = insert_edge(webg, s1, s3);
+    mu_assert(rc == 0, "failed to insert right url");
+    rc = insert_edge(webg, s1, s4);
+    mu_assert(rc == 0, "failed to insert right url");
+    rc = insert_edge(webg, s2, s4);
+    mu_assert(rc == 0, "failed to insert right url");
+
     return NULL;
 }
 
-char* test_insert_vertex_edge() {
-    return NULL;
-}
 
 char* test_set_num() {
     return NULL;
@@ -113,7 +136,6 @@ char *all_tests() {
     mu_run_test(test_init_webg);
     mu_run_test(test_insert_vertex);
     mu_run_test(test_insert_edge);
-    mu_run_test(test_insert_vertex_edge);
     mu_run_test(test_set_num);
     mu_run_test(test_get_num);
     mu_run_test(test_set_get_num);

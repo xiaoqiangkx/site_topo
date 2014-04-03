@@ -110,9 +110,57 @@ int insert_vertex(webg_t* webg, const char* url) {
     webg->sm_vertex_dict[webg->vertex_num].url_num_node = new_url_num_node;
     webg->vertex_num++;
 
-    return 0;
+    return webg->vertex_num - 1;
 
 error:
+    return -1;
+}
+
+int insert_edge(webg_t* webg, const char* from_url, const char* to_url) {
+    if (strncmp(from_url, to_url, strlen(to_url)) == 0) {
+        log_info("from_url and to_url are both %s", from_url);    
+        return -1;
+    }
+
+    /* find from_url, if not we return -1(failed) */
+    int from_num = get_vertex_addr(webg, from_url);
+    if (from_num < 0) {
+        log_info("failed to find from_url %s", from_url);
+        return -1;
+    }
+
+    /* find to_url, if not we just insert a new node to_url */    
+    int to_num = get_vertex_addr(webg, to_url);
+    if (to_num < 0) {
+        log_info("do not find to_url %s", to_url);
+        to_num = insert_vertex(webg, to_url);
+        log_info("failed to insert to_url %s", to_url);
+        if (to_num < 0) return -1;
+    }
+
+    /* insert the edge */
+    sm_vertex_t *from_node = &webg->sm_vertex_dict[from_num];  
+
+    sm_edge_node *new_edge_node = malloc(sizeof(sm_edge_node));
+    check_mem(new_edge_node);
+
+    new_edge_node->next = NULL;
+    new_edge_node->url_num_node = webg->sm_vertex_dict[to_num].url_num_node;
+
+    if (from_node == NULL) {
+        
+        from_node->next = new_edge_node;    
+    } else {
+
+        new_edge_node->next = from_node->next;
+        from_node->next = new_edge_node;
+    }
+
+    return 0;
+
+/* if error, clean those memory */
+error:
+    free(new_edge_node);
     return -1;
 }
 

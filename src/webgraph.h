@@ -78,11 +78,13 @@ void destory_webg(webg_t*);
 
 /*
  * insert vertex into the sizeth data and hash table
+ * return -1 if failed, otherwise 0
  */
 int insert_vertex(webg_t* webg, const char* url);
 
 /*
  * insert edge node
+ * return -1 if failed, otherwise 0
  */
 int insert_edge(webg_t* webg, const char* from_url, const char* to_url);
 
