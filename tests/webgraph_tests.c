@@ -82,6 +82,8 @@ char* test_insert_vertex() {
     mu_assert(r4 < size(webg) && !strncmp(webg->sm_vertex_dict[r4].url_num_node->url, s4, strlen(s4)), 
                 "failed to find s4");
 
+    int r5 = get_vertex_addr(webg, s5);
+    mu_assert(r5 == -1, "do not return -1 in find invalid string s5");
     return NULL;
 }
 
