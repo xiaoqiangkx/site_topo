@@ -100,7 +100,8 @@ int insert_vertex(webg_t* webg, const char* url) {
     
     /* assignment of url_to_num node */
     new_url_num_node->num = webg->vertex_num;
-    memcpy(new_url_num_node->url, url, strlen(url) + 1);   /* may be flaw */
+    memcpy(new_url_num_node->url, url, strlen(url) + 1);   /* +1 to copy zero may be flaw */
+    
     new_url_num_node->status = -1;    /* success to insert data */
 
     new_url_num_node->next = NULL;

@@ -27,10 +27,11 @@ static void* add(void* args) {
     return NULL;
 }
 
+#define THREAD_NUM 5
 char* test_add_tasks() {
     int i = 0;
     
-    for (i=0; i<10000; i++) {
+    for (i=0; i<THREAD_NUM; i++) {
         thread_pool_add_task(add, (void*)i);
     }
     
