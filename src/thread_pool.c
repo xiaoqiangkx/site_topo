@@ -73,3 +73,35 @@ void thread_pool_destroy(thread_pool_t* thread_pool) {
 
     free(thread_pool);
 }
+
+int thread_pool_add_task(thread_pool_t* thread_pool, void* (*routine)(void*), void* args) {
+    if (thread_pool == NULL) {
+        log_err("add task into NULL thread_pool");
+        return -1;
+    }
+
+    task_t *new_task = malloc(sizeof(task_t));
+    check_mem(new_task);
+    new_task->routine = routine;
+    new_task->args = args;
+    new_task->next = NULL;  /* remember to initial it */
+
+    pthread_mutex_lock(&thread_pool->queue_lock);
+    if (thread_pool->task_head == NULL) {
+
+        thread_pool->task_head = new_task;
+    } else {
+
+        new_task->next = thread_pool->task_head->next;
+        thread_pool->task_head->next = new_task;
+    }
+    thread_pool->task_cnt++;
+
+    pthread_mutex_unlock(&thread_pool->queue_lock);
+    pthread_cond_signal(&thread_pool->queue_ready);
+
+    return 0;
+
+error:
+    return -1;
+}

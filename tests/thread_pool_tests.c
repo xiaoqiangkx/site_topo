@@ -1,4 +1,5 @@
 #include "minunit.h"
+#include <stdio.h>
 #include <dbg.h>
 #include <thread_pool.h>
 
@@ -17,7 +18,21 @@ char* test_create() {
     return NULL;
 }
 
+static int a = 0;
+static int b = 1;
+static void* add(void* args) {
+    a++;
+    b++;
+    printf("thread:%d\t%d\t%d\n", (int)args, a, b);
+    return NULL;
+}
+
 char* test_add_tasks() {
+    int i = 0;
+    thread_pool_add_task(tp, add, (void*)i);
+    task_t *p = tp->task_head;
+    mu_assert(tp->task_cnt == 1, "tp task is not 1");
+
     return NULL;
 }
 

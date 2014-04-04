@@ -35,5 +35,5 @@ void thread_pool_destroy(thread_pool_t* thread_pool);
 /*
  * add a task to the task list
  */
-int thread_pool_add_task(void* (*routine)(void*), void* args);
+int thread_pool_add_task(thread_pool_t* thread_pool, void* (*routine)(void*), void* args);
 #endif
