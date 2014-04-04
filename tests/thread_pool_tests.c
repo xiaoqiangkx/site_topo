@@ -3,17 +3,17 @@
 #include <dbg.h>
 #include <thread_pool.h>
 
-thread_pool_t *tp = NULL;
+thread_pool_t *thread_pool = NULL;
 #define MAX_THREAD 100
 
 char* test_create() {
-    int rc = thread_pool_create(&tp, MAX_THREAD);
+    int rc = thread_pool_create(MAX_THREAD);
     mu_assert(rc == 0, "Failed to create thread pool");
-    mu_assert(tp != NULL, "Failed to create tp");
-    mu_assert(tp->max_thr_num == MAX_THREAD, "Failed to set max_thr_num");
-    mu_assert(tp->stat == SHUTDOWN, "tp is open");
-    mu_assert(tp->task_head == NULL, "tp has task");
-    mu_assert(tp->thread_ids != NULL, "Faile to initial thread head");
+    mu_assert(thread_pool != NULL, "Failed to create thread_pool");
+    mu_assert(thread_pool->max_thr_num == MAX_THREAD, "Failed to set max_thr_num");
+    mu_assert(thread_pool->stat == OPEN, "thread_pool is shutdown");
+    mu_assert(thread_pool->task_head == NULL, "thread_pool has task");
+    mu_assert(thread_pool->thread_ids != NULL, "Faile to initial thread head");
 
     return NULL;
 }
@@ -29,10 +29,13 @@ static void* add(void* args) {
 
 char* test_add_tasks() {
     int i = 0;
-    thread_pool_add_task(tp, add, (void*)i);
-    task_t *p = tp->task_head;
-    mu_assert(tp->task_cnt == 1, "tp task is not 1");
-
+    
+    for (i=0; i<10000; i++) {
+        thread_pool_add_task(add, (void*)i);
+    }
+    
+     task_t *p = thread_pool->task_head;
+    
     return NULL;
 }
 
@@ -41,7 +44,7 @@ char* test_run_thread() {
 }
 
 char* test_destroy() {
-    thread_pool_destroy(tp);
+    thread_pool_destroy();
     return NULL;
 }
 

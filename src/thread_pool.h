@@ -15,6 +15,7 @@ typedef struct _thread_pool_t {
     int             max_thr_num;
     tp_status       stat;   /* 0 shutdown, 1 open */
     int             task_cnt;    /* tasks waiting to be done */
+    int             busy_cnt;
     pthread_mutex_t queue_lock;  /* lock the thread and queue */
     pthread_cond_t  queue_ready;  /* signal other thread to continue */
     task_t*         task_head;
@@ -25,15 +26,15 @@ typedef struct _thread_pool_t {
 /*
  * create a thread_pool
  */
-int thread_pool_create(thread_pool_t** thread_pool, int max_thread);
+int thread_pool_create(int max_thread);
 
 /*
  * destroy a thread_pool
  */
-void thread_pool_destroy(thread_pool_t* thread_pool);
+void thread_pool_destroy();
 
 /*
  * add a task to the task list
  */
-int thread_pool_add_task(thread_pool_t* thread_pool, void* (*routine)(void*), void* args);
+int thread_pool_add_task(void* (*routine)(void*), void* args);
 #endif
