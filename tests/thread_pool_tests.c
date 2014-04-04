@@ -7,7 +7,12 @@ thread_pool_t *tp = NULL;
 
 char* test_create() {
     int rc = thread_pool_create(&tp, MAX_THREAD);
-    mu_assert(rc == 0, "Failed to create thread");
+    mu_assert(rc == 0, "Failed to create thread pool");
+    mu_assert(tp != NULL, "Failed to create tp");
+    mu_assert(tp->max_thr_num == MAX_THREAD, "Failed to set max_thr_num");
+    mu_assert(tp->stat == SHUTDOWN, "tp is open");
+    mu_assert(tp->task_head == NULL, "tp has task");
+    mu_assert(tp->thread_ids != NULL, "Faile to initial thread head");
 
     return NULL;
 }
@@ -21,6 +26,7 @@ char* test_run_thread() {
 }
 
 char* test_destroy() {
+    thread_pool_destroy(tp);
     return NULL;
 }
 

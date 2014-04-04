@@ -9,14 +9,16 @@ typedef struct _task_t {
     struct _task_t *next;
 } task_t;
 
+typedef enum {SHUTDOWN=0, OPEN} tp_status;
+
 typedef struct _thread_pool_t {
     int             max_thr_num;
-    int             shutdown;   /* set 0 to shutdown all threads */
+    tp_status       stat;   /* 0 shutdown, 1 open */
     int             task_cnt;    /* tasks waiting to be done */
     pthread_mutex_t queue_lock;  /* lock the thread and queue */
     pthread_cond_t  queue_ready;  /* signal other thread to continue */
     task_t*         task_head;
-    pthread_t*      thread_head;       
+    pthread_t*      thread_ids;       
 } thread_pool_t;
 
 
