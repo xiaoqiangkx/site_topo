@@ -13,7 +13,7 @@ static char* s7 = "http://localhost/index7.html";
 static char url[256];
 
 char* test_init() {
-    queue = malloc(sizeof(queue_t));
+    queue_init(&queue);
     mu_assert(queue->front == NULL, "the front of queue is NULL");
     mu_assert(queue->tail == NULL, "the tail of queue is NULL");
     mu_assert(queue->size == 0, "the size of queue is not 0");
@@ -44,7 +44,6 @@ char* test_push_pop() {
 
 char* test_clear() {
     queue_clear(queue);
-    free(queue);
     return NULL;
 }
 

@@ -4,12 +4,20 @@
 */
 
 #include "urlqueue.h"
+#include "dbg.h"
 
-void queue_init(queue_t * q)
+int queue_init(queue_t **qq)
 {
+    *qq = malloc(sizeof(queue_t));
+    check_mem(*qq);
+    queue_t *q = *qq;
 	q->size = 0;
 	q->front = NULL;
 	q->tail = NULL;
+
+    return 0;
+error:
+    return -1;
 }
 
 int queue_size(queue_t *q)
@@ -76,5 +84,6 @@ void queue_clear(queue_t *q)
 	q->tail = NULL;
 	q->size = 0;
 //	q = NULL;
+    free(q);
 }
 

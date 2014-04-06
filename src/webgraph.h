@@ -67,7 +67,7 @@ typedef struct _webg_t {
  * allocate memory and initialization
  * Return: success then return 0, otherwise -1
  */
-int init_webg(webg_t**);
+int webg_init(webg_t**);
 
 
 /*
@@ -78,7 +78,7 @@ void destory_webg(webg_t*);
 
 /*
  * insert vertex into the sizeth data and hash table
- * return -1 if failed, otherwise 0
+ * return -1 if failed, otherwise >= 0
  */
 int insert_vertex(webg_t* webg, const char* url);
 

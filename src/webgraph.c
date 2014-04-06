@@ -4,7 +4,7 @@
 #include <hash.h>
 #include "dbg.h"
 
-int init_webg(webg_t** webg) {
+int webg_init(webg_t** webg) {
 
     *webg = (webg_t*)malloc(sizeof(webg_t)); 
     check_mem(*webg);
@@ -85,9 +85,10 @@ int insert_vertex(webg_t* webg, const char* url) {
     }
     
     /* avoid to insert twice */
-    if (get_vertex_addr(webg, url) != -1) {
+    int i;
+    if ((i = get_vertex_addr(webg, url)) != -1) {
        log_err("Insert vertex twice, %s", url);
-       return -1; 
+       return i; 
     }
 
 
@@ -144,8 +145,10 @@ int insert_edge(webg_t* webg, const char* from_url, const char* to_url) {
     if (to_num < 0) {
         log_info("do not find to_url %s", to_url);
         to_num = insert_vertex(webg, to_url);
-        log_info("failed to insert to_url %s", to_url);
-        if (to_num < 0) return -1;
+        if (to_num < 0) {
+            log_info("failed to insert to_url %s", to_url);
+            return -1;
+        }
     }
 
 

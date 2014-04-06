@@ -29,6 +29,7 @@ void* thread_routine(void* args) {
         pthread_mutex_unlock(&thread_pool->queue_lock);
 
         task->routine(task->args);
+    //    free(task->args);   /* data in args is malloced and owned by one thread */
         free(task);
         
         pthread_mutex_lock(&thread_pool->queue_lock);

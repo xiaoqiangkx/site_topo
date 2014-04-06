@@ -20,7 +20,7 @@ typedef struct _queue {
 ** initialize an empty urlq_t
 ** must be called first after a new urlq_t is declared
 */
-void queue_init(queue_t *q);
+int queue_init(queue_t **q);
 
 
 /*****

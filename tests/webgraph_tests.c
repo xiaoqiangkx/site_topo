@@ -14,7 +14,7 @@ static char* s7 = "http://localhost/index7.html";
 
 char *test_init_webg() {
     
-    init_webg(&webg);
+    webg_init(&webg);
     mu_assert(webg != NULL, "webg == NULL");
     mu_assert(webg->sm_vertex_dict != NULL, "failed to allocate memory for sm_vertex_dict.");
     mu_assert(webg->url_dict != NULL, "failed to allocate memory for url_dict.");
@@ -88,7 +88,7 @@ char* test_insert_vertex() {
 
     /* insert twice */
     int rc = insert_vertex(webg, s1);
-    mu_assert(rc == -1, "Insert string twice");
+    mu_assert(rc != -1, "Insert string failed");
 
     return NULL;
 }

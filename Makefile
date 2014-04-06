@@ -12,7 +12,7 @@ TARGET=build/libsite_topo.a
 SO_TARGET=$(patsubst %.a, %.so, $(TARGET))
 
 # The Target Build
-all: $(TARGET) $(SO_TARGET) tests
+all: $(TARGET) $(SO_TARGET) tests main
 
 dev: CFLAGS=-g -Wall -Isrc -Wall -Wextra $(OPTFLAGS)
 dev: all
@@ -47,6 +47,7 @@ clean:
 	rm -f tests/tests.log
 	find . -name "*.gc" -exec rm {} \;
 	rm -rf `find . -name "*.dSYM" -print`
+	rm main
 
 # The Install
 install: all
@@ -59,3 +60,6 @@ BADFUNCS='[^_.>a-zA-Z0-9(str(n?cpy|n?cat|xfrm|n?dup|str|pbrk|tok|_)|stpn?cpy|a?s
 check:
 	@echo Files with potentially dangerous functions.
 	@egrep $(BADFUNCS) $(SOURCES) || true
+
+main:
+	gcc -g -o main main.c -Isrc -lpthread build/libsite_topo.a
