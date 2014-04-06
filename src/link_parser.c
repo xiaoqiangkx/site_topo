@@ -4,12 +4,13 @@
 ** - 处理http响应字节流，提取网络链接
 */
 
-#include "link_parser.h"
+#include <link_parser.h>
+#include <dbg.h>
 
 void get_info_from_url(char *host, char *path, const char* srcUrl)
 {
 	int hostnum=0,pathnum=0;
-	char *p = srcUrl+strlen("http://");
+	char *p = srcUrl+strlen("http://");     /* pass http:// */
 	while(*p != '/') {
 		host[hostnum] = *p;
 		p = p + sizeof(char);
@@ -28,6 +29,7 @@ void get_info_from_url(char *host, char *path, const char* srcUrl)
 
 static int link_to_url(char *link, char *url, const char *abpath)
 {
+    // log_info("link=%s, url=%s, abpath=%s", link, url, abpath);
 	char host[20],path[200];
 	get_info_from_url(host,path,abpath);
 	char *p, *l;
@@ -65,11 +67,13 @@ static int link_to_url(char *link, char *url, const char *abpath)
 			break;
 		}
 	}
+
+    log_info("host=%s, path=%s, p=%s", host, path, p);
 	memcpy(url,"http://",strlen("http://"));
 	url[strlen("http://")] = '\0';
 	strcat(url,host);
 	strcat(url,path);
-	strcat(url,"/");
+//	strcat(url,"/");    /* some website use /, some do not have */
 	strcat(url,p);
 	return 0;
 }
@@ -109,6 +113,7 @@ static int checkhtm(const char * htmltxt)
 
 void extract_link_from_autom(const char * const htmltxt, link_t *linklist, const char *abpath)
 {
+    //log_info("html\n is %s", htmltxt);
     enum {S_START, S_LEFT, S_A, S_BLANK, S_H, S_R, S_E, S_F, S_EQ, S_LQ, S_RQ, S_RIGHT, S_END};
     const char *ch = htmltxt;
     int status = S_START;

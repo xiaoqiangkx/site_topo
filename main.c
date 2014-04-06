@@ -6,10 +6,12 @@
 #include <webgraph.h>
 #include <urlqueue.h>
 #include <thread_pool.h>
+#include <crawler.h>
 
 webg_t *webg;
 thread_pool_t *thread_pool; /* global thread_pool */
 queue_t *queue;
+int craw_count;
 
 #define THREAD_MAX 100
 #define URL_MAX 256
@@ -56,7 +58,8 @@ error:
 
 int main(int argc, char** argv) {
     /* 1.read data */
-    char *url = "0";  /* waitting for initialization */
+    //char *url = "http://xiaoqiangkx.github.io/categories.html";  /* waitting for initialization */
+    char *url = argv[1];
 
     /* 2.initial data */
     int rc = webg_init(&webg);
@@ -103,7 +106,7 @@ int main(int argc, char** argv) {
                 memcpy(temp, url_copy, len + 1);
 
                 pthread_mutex_unlock(&thread_pool->queue_lock);
-                thread_pool_add_task(routine, (void*)temp); /* other will not add task between unlock and task, so it is safe */
+                thread_pool_add_task(do_crawler, (void*)temp); /* other will not add task between unlock and task, so it is safe */
             } else {
                 pthread_mutex_unlock(&thread_pool->queue_lock);
             }

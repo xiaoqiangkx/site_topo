@@ -3,11 +3,12 @@
 ** - implements the methods declared in crawler.h
 ** -爬取线程的核心流程
 */
-#include "crawler.h"
+#include <crawler.h>
+#include <dbg.h>
 
 extern webg_t *webg;
-extern queue_t *allurl_queue;
-extern pool_t *pool;
+extern queue_t *queue;
+extern thread_pool_t *thread_pool;
 extern int craw_count;
 
 void *do_crawler(void *url) //完成爬取线程的核心流程
@@ -17,11 +18,11 @@ void *do_crawler(void *url) //完成爬取线程的核心流程
 	link_t  *linklist;
 	http_client_t http_client;
 	
-	pthread_mutex_lock(&pool->queue_lock);
+	pthread_mutex_lock(&thread_pool->queue_lock);
 	printf("--------------------------crawler \"%s\"-----------------------\n", (char *)url);
 	printf("now has already crawlered: %d\n",craw_count++);
-	printf("now queue size is %d\n",queue_size(allurl_queue));
-	pthread_mutex_unlock(&pool->queue_lock);
+	printf("now queue size is %d\n",queue_size(queue));
+	pthread_mutex_unlock(&thread_pool->queue_lock);
 	while(flag == -1 && count < 3) {
 		get_info_from_url(hostname, path,(char *)url);
 
@@ -61,14 +62,14 @@ void *do_crawler(void *url) //完成爬取线程的核心流程
 		}
 	}
 	if(flag == -1) {
-			pthread_mutex_lock(&pool->queue_lock);
-		num = set_vertex_num(url,0,webg);
-			pthread_mutex_unlock(&pool->queue_lock);
+			pthread_mutex_lock(&thread_pool->queue_lock);
+		num = set_url_status(webg, url, -3);
+			pthread_mutex_unlock(&thread_pool->queue_lock);
 		//printf("url is %s, set is %d.\n",(char *)url, num);
 	} else if(status / 100 != 2) {
-			pthread_mutex_lock(&pool->queue_lock);
-		num = set_vertex_num(url,0,webg);
-			pthread_mutex_unlock(&pool->queue_lock);
+			pthread_mutex_lock(&thread_pool->queue_lock);
+		num = set_url_status(webg, url, -3);
+			pthread_mutex_unlock(&thread_pool->queue_lock);
 		//printf("url is %s, set is %d.\n",(char *)url, num);
 		http_close(&http_client);
 	} else {
@@ -84,21 +85,22 @@ void *do_crawler(void *url) //完成爬取线程的核心流程
 		link_init(linklist);
 		extract_link_from_autom(http_client.content_text, linklist, url);
 
-			pthread_mutex_lock(&pool->queue_lock);
-		num = set_vertex_num(url,1,webg);
-			pthread_mutex_unlock(&pool->queue_lock);
+			pthread_mutex_lock(&thread_pool->queue_lock);
+		num = set_url_status(webg, url, get_vertex_addr(webg, url));
+			pthread_mutex_unlock(&thread_pool->queue_lock);
 		//printf("url is %s, set is %d.\n",(char *)url, num);
 		while(link_size(linklist) > 0) {
 			link_pop(linklist,link);
-			pthread_mutex_lock(&pool->queue_lock);
-			num = get_vertex_num(link, webg);
+			pthread_mutex_lock(&thread_pool->queue_lock);
+			num = get_url_status(webg, link);
 			//printf("url is %s, num is %d.\n",link,num);
 			if(num == -4) { //未找到点，插入
-				insert_vertex(link, webg);
-				queue_push(allurl_queue,link);
+				insert_vertex(webg, link);
+				queue_push(queue, link);
+                log_info("link is %s", link);
 			}
-			pthread_mutex_unlock(&pool->queue_lock);
-			insert_edge(url,link,webg);
+			pthread_mutex_unlock(&thread_pool->queue_lock);
+			insert_edge(webg, url, link);
 		}
 		link_clear(linklist);
 		free(linklist);
