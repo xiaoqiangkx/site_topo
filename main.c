@@ -19,6 +19,7 @@ void* routine(void* args) {
     char *url = (void*)args;
     char temp[URL_MAX];
     int len = strlen(url);
+    printf("pthread(%d):%s\n", getpid(), url);
 
     if (url[len-1] == '9') return NULL;
     memcpy(temp, url, len + 1);
@@ -26,17 +27,30 @@ void* routine(void* args) {
     /* doSomething */
     pthread_mutex_lock(&thread_pool->queue_lock);
     temp[len-1] += 1;
-    queue_push(queue, temp);
     insert_edge(webg, url, temp);
+    if (get_url_status(webg, temp) == -1) {
+        queue_push(queue, temp);
+    } else {
+        log_info("already insert %s", temp);
+    }
 
     if (temp[len-1] < '8') {
         temp[len-1] += 1;
-        queue_push(queue, temp);
         insert_edge(webg, url, temp);
+        if (get_url_status(webg, temp) == -1) {
+            queue_push(queue, temp);
+        } else {
+            log_info("already insert %s", temp);
+        }
     }
+
+    int rc = set_url_status(webg, url, get_vertex_addr(webg, url));
+    check(rc != -4, "url:%s is not invliad", url);
     pthread_mutex_unlock(&thread_pool->queue_lock);
 
-    printf("pthread(%d):%s, %s\n", getpid(), url, temp);
+    return NULL;
+
+error:
     return NULL;
 }
 
