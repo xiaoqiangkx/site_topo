@@ -11,13 +11,15 @@ void get_info_from_url(char *host, char *path, const char* srcUrl)
 {
 	int hostnum=0,pathnum=0;
 	char *p = srcUrl+strlen("http://");     /* pass http:// */
-	while(*p != '/') {
+
+    char *end_path = srcUrl + strlen(srcUrl);   /* the end */
+	while(p != end_path && *p != '/') {
 		host[hostnum] = *p;
 		p = p + sizeof(char);
 		hostnum++;
 	}
 	host[hostnum] = '\0';
-	while(*p != '\0') {
+	while(p != end_path && *p != '\0') {
 		path[pathnum] = *p;
 		p = p + sizeof(char);
 		pathnum++;
@@ -29,8 +31,9 @@ void get_info_from_url(char *host, char *path, const char* srcUrl)
 
 static int link_to_url(char *link, char *url, const char *abpath)
 {
-    // log_info("link=%s, url=%s, abpath=%s", link, url, abpath);
-	char host[20],path[200];
+    
+    log_info("link_to_url::link=%s, url=%s, abpath=%s", link, url, abpath);
+	char host[200],path[200];
 	get_info_from_url(host,path,abpath);
 	char *p, *l;
 	l = strrchr(path,'/');

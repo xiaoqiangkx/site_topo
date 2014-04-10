@@ -13,7 +13,7 @@ extern int craw_count;
 
 void *do_crawler(void *url) //完成爬取线程的核心流程
 {
-	char hostname[20],path[200],link[255];
+	char hostname[200],path[200],link[255];
 	int status, num, flag = -1, count = 0, re;
 	link_t  *linklist;
 	http_client_t http_client;
@@ -22,6 +22,7 @@ void *do_crawler(void *url) //完成爬取线程的核心流程
 	printf("--------------------------crawler \"%s\"-----------------------\n", (char *)url);
 	printf("now has already crawlered: %d\n",craw_count++);
 	printf("now queue size is %d\n",queue_size(queue));
+ log_info("NOW is crawling is url %s", (char*)url);
 	pthread_mutex_unlock(&thread_pool->queue_lock);
 	while(flag == -1 && count < 3) {
 		get_info_from_url(hostname, path,(char *)url);
@@ -32,7 +33,9 @@ void *do_crawler(void *url) //完成爬取线程的核心流程
 			count++;
 			continue;
 		}
-		re = http_do_get(http_client,hostname,(char*)url);
+        
+        log_info("http_do_get: hostname=%s, url=%s", hostname, path);
+		re = http_do_get(http_client, hostname, path);
 		if(re == -1) {
 			flag = -1;
 			http_close(&http_client);

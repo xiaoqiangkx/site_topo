@@ -1,5 +1,10 @@
+Usage
+=====================
+
+`./main http://xiaoqiangkx.github.com
+
 Tricks
-===========
+=====================
 
 `gcc -o main.o main.c -Isrc`
 
